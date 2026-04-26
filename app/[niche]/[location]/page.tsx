@@ -1,7 +1,10 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import { ChevronDown } from 'lucide-react'
 import { Hero } from '@/components/landing/Hero'
 import { TrustBar } from '@/components/landing/TrustBar'
+import { HowItWorks } from '@/components/landing/HowItWorks'
+import { CredentialBar } from '@/components/landing/CredentialBar'
 import { Reviews } from '@/components/landing/Reviews'
 import { getNicheConfig } from '@/config/niches'
 import { getLocationConfig } from '@/config/locations'
@@ -112,6 +115,29 @@ export default function NicheLocationPage({ params }: PageProps) {
     },
   }
 
+  const faqs = [
+    {
+      q: `How quickly will a ${nicheConfig.name.toLowerCase()} contractor contact me?`,
+      a: `Most homeowners in ${locationConfig.city} hear from a licensed contractor within 60 minutes of submitting their request — often sooner.`,
+    },
+    {
+      q: `Is the quote really free?`,
+      a: `Yes. There is no cost, no obligation, and no credit card required to get a quote. You only pay if you choose to hire the contractor.`,
+    },
+    {
+      q: `Are your contractors licensed and insured in ${locationConfig.state}?`,
+      a: `All contractors in our network are fully licensed and insured in ${locationConfig.state}. We verify credentials before admitting any professional to the platform.`,
+    },
+    {
+      q: `What ${nicheConfig.name.toLowerCase()} services are available in ${locationConfig.city}?`,
+      a: `We connect homeowners with contractors offering: ${nicheConfig.serviceTypes.slice(0, -1).join(', ')}.`,
+    },
+    {
+      q: `What areas do you serve beyond ${locationConfig.city}?`,
+      a: `In addition to ${locationConfig.city}, we serve all of ${locationConfig.county} County and surrounding communities in ${locationConfig.state}.`,
+    },
+  ]
+
   return (
     <>
       <script
@@ -119,7 +145,7 @@ export default function NicheLocationPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main>
+      <main className="pb-20 lg:pb-0">
         <Hero
           nicheSlug={params.niche}
           nicheName={nicheConfig.name}
@@ -134,9 +160,11 @@ export default function NicheLocationPage({ params }: PageProps) {
 
         <TrustBar />
 
-        <section className="bg-white py-16 px-4">
+        <HowItWorks nicheName={nicheConfig.name} />
+
+        <section className="bg-slate-50 py-16 px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">
               Professional {nicheConfig.name} Services in {locationConfig.city}, {locationConfig.state}
             </h2>
             <div className="prose prose-gray max-w-none text-gray-600">
@@ -165,7 +193,34 @@ export default function NicheLocationPage({ params }: PageProps) {
           </div>
         </section>
 
+        <CredentialBar />
+
         <Reviews nicheName={nicheConfig.name} city={locationConfig.city} />
+
+        {/* FAQ */}
+        <section className="bg-white py-20 px-4">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold text-slate-900 text-center mb-10">
+              Frequently Asked Questions
+            </h2>
+            <dl className="space-y-4">
+              {faqs.map((faq) => (
+                <details
+                  key={faq.q}
+                  className="group border border-slate-200 rounded-xl overflow-hidden"
+                >
+                  <summary className="flex justify-between items-center px-6 py-4 cursor-pointer list-none font-semibold text-slate-900 hover:bg-slate-50 transition-colors">
+                    {faq.q}
+                    <ChevronDown className="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform shrink-0 ml-4" aria-hidden="true" />
+                  </summary>
+                  <div className="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
+                    {faq.a}
+                  </div>
+                </details>
+              ))}
+            </dl>
+          </div>
+        </section>
 
         <footer className="bg-gray-900 text-gray-400 py-8 px-4 text-center text-sm">
           <p>

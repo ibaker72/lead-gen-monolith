@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { CheckCircle2, Loader2 } from 'lucide-react'
+import { Bell, CheckCircle2, Lock, Loader2 } from 'lucide-react'
 
 const quoteSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -25,6 +25,7 @@ const quoteSchema = z.object({
       /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/,
       'Please enter a valid phone number'
     ),
+  email: z.string().email('Please enter a valid email').optional().or(z.literal('')),
   serviceType: z.string().min(1, 'Please select a service'),
 })
 
@@ -35,9 +36,10 @@ interface QuoteFormProps {
   locationSlug: string
   serviceTypes: string[]
   ctaText: string
+  city: string
 }
 
-export function QuoteForm({ nicheSlug, locationSlug, serviceTypes, ctaText }: QuoteFormProps) {
+export function QuoteForm({ nicheSlug, locationSlug, serviceTypes, ctaText, city }: QuoteFormProps) {
   const [submitted, setSubmitted] = useState(false)
   const [leadId, setLeadId] = useState<string | null>(null)
 
@@ -97,13 +99,16 @@ export function QuoteForm({ nicheSlug, locationSlug, serviceTypes, ctaText }: Qu
 
   return (
     <form
+      id="quote-form"
       onSubmit={handleSubmit(onSubmit)}
       className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 space-y-5"
       noValidate
     >
       <div>
+        <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-200 mb-3">
+          No obligation · Free · Takes 60 seconds
+        </div>
         <h2 className="text-xl font-bold text-gray-900">Get Your Free Quote</h2>
-        <p className="text-sm text-gray-500 mt-1">No obligation · Takes 60 seconds</p>
       </div>
 
       <div className="space-y-1.5">
@@ -140,6 +145,26 @@ export function QuoteForm({ nicheSlug, locationSlug, serviceTypes, ctaText }: Qu
       </div>
 
       <div className="space-y-1.5">
+        <Label htmlFor="email">
+          Email{' '}
+          <span className="text-slate-400 font-normal">(optional)</span>
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder="you@example.com"
+          autoComplete="email"
+          {...register('email')}
+          aria-invalid={!!errors.email}
+        />
+        {errors.email && (
+          <p className="text-xs text-red-600" role="alert">
+            {errors.email.message}
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-1.5">
         <Label htmlFor="serviceType">Service Needed</Label>
         <Select onValueChange={(val) => setValue('serviceType', val, { shouldValidate: true })}>
           <SelectTrigger id="serviceType" aria-invalid={!!errors.serviceType}>
@@ -160,11 +185,16 @@ export function QuoteForm({ nicheSlug, locationSlug, serviceTypes, ctaText }: Qu
         )}
       </div>
 
+      <p className="text-xs text-center text-amber-700 bg-amber-50 border border-amber-200 rounded-lg py-2 flex items-center justify-center gap-1.5">
+        <Bell className="w-3.5 h-3.5" aria-hidden="true" />
+        12 homeowners requested quotes in {city} today
+      </p>
+
       <Button
         type="submit"
         size="lg"
         disabled={isSubmitting}
-        className="w-full text-base font-semibold bg-blue-600 hover:bg-blue-700 h-12"
+        className="w-full text-base font-semibold bg-blue-600 hover:bg-blue-700 shadow-md h-12"
       >
         {isSubmitting ? (
           <>
@@ -176,8 +206,8 @@ export function QuoteForm({ nicheSlug, locationSlug, serviceTypes, ctaText }: Qu
         )}
       </Button>
 
-      <p className="text-xs text-center text-gray-400">
-        By submitting you agree to be contacted by local contractors. We never share your info.
+      <p className="text-xs text-center text-slate-400 flex items-center justify-center gap-1">
+        <Lock className="w-3 h-3" aria-hidden="true" /> Your info is private · We never sell your data
       </p>
     </form>
   )
